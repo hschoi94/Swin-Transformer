@@ -580,9 +580,16 @@ class SwinTransformer(nn.Module):
 
     def forward_features(self, x):
         x = self.patch_embed(x)
+
+        b, ph, pw, num_x = x.shape
+        x = x.view(b, ph*pw, num_x)
+
         if self.ape:
             x = x + self.absolute_pos_embed
+            
         x = self.pos_drop(x)
+
+        x = x.view(b, ph, pw, num_x)
 
         for layer in self.layers:
             x = layer(x)
